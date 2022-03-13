@@ -13,28 +13,30 @@ namespace CandyMachine
     class Program
     {
 
-        private static byte GetSelection(byte input) // function for the selection's user
+        private static int GetSelection(int input) // function for the selection's user
         {
             bool tryParse = false;
+
             do
-                {
+            {
                     Print();
                     Console.Write("Veuillez faire votre selection [1-25] : ");
-                    input = byte.Parse(Console.ReadLine());
-                    tryParse = byte.TryParse(Console.ReadLine(), out input); // Users are forced to use a number
-                    if (input < 0 || input > 25)
-                    {
-                        Console.WriteLine("Veuillez entrez un nombre valide.");
-                        Thread.Sleep(1000);
+                    tryParse = int.TryParse(Console.ReadLine(), out input); // Users are forced to use a number
+                    if (input < 0 || input > 25) 
+                    { 
+                             Console.WriteLine("Veuillez entrez un nombre valide.");
+                             Thread.Sleep(1000); 
                     }
-                } while (input < 0 || input > 25 || tryParse != true);
+        
+            } while (input < 0 || input > 25 || tryParse != true);
 
-                return input;
-            }
+            return input;
+        }
 
-        public static byte GetCandy(byte[] candyArray, byte input)
+
+        public static int GetCandy(int input)
         {
-            return candyArray[input - 1];
+            return input - 1;
         }
 
         static double GetCoin(double Coin)
@@ -52,7 +54,7 @@ namespace CandyMachine
             do
             {
                 tryparse = byte.TryParse(Console.ReadLine(), out input);
-                if (input < 5 || input >= 5)
+                if (input < 5 || input > 0)
                 {
                     switch (input)
                     {
@@ -83,16 +85,27 @@ namespace CandyMachine
 
         static void Main()
         {
-            byte input = 0;
+            int input = 0;
             Data dataCandy = new Data();
             Candy[] candies = dataCandy.LoadCandies();
-            byte[] ArrayCandy = new byte[0];
-            double Coin = 0;
-            bool tryparse = false;
-            GetSelection(input);
+            
+            // byte[] ArrayCandy = new byte[0];
+            // double Coin = 0;
+
+            // do
+            // {
+                input = GetSelection(input);
+            // GetCandy(ArrayCandy, input);
             // GetCoin(Coin);
-            // Console.WriteLine(candies[GetCandy(ArrayCandy,input)].Name);
-            Console.WriteLine(input);
+            if (candies[GetCandy(input)].Stock == 0)
+            {
+                Print($"{candies[GetCandy(input)].Name} est vite");
+            }
+                
+            // Console.WriteLine(GetSelection(input));
+
+
+            // }
 
         }
         
