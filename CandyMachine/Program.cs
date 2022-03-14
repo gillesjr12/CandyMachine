@@ -3,6 +3,7 @@ using static Project.Board;
 using static Project.Candy;
 using static Project.Data;
 using System.Globalization;
+using System.Reflection.Emit;
 using System.Threading;
 using System.Transactions;
 
@@ -39,11 +40,11 @@ namespace CandyMachine
             return input - 1;
         }
 
-        static double GetCoin(double Coin)
+        static decimal GetCoin(int input)
         {
-            byte input = 0;
+            input = 0;
             bool tryparse = false;
-            Coin = 0;
+            decimal Coin = 0;
             Console.WriteLine("[0] = Annuler");
             Console.WriteLine("[1] = 5c");
             Console.WriteLine("[2] = 10c");
@@ -53,27 +54,28 @@ namespace CandyMachine
             Console.Write("--> ");
             do
             {
-                tryparse = byte.TryParse(Console.ReadLine(), out input);
-                if (input < 5 || input > 0)
+                tryparse = int.TryParse(Console.ReadLine(), out input);
+                if (input <= 5 || input >= 0)
                 {
                     switch (input)
                     {
                         case 0:
-                            return 0;
+                            Environment.Exit(0);
+                            break;
                         case 1:
-                            Coin += 0.05d;
+                            Coin += 0.05m;
                             break;
                         case 2:
-                            Coin += 0.10d;
+                            Coin += 0.10m;
                             break;
                         case 3:
-                            Coin += 0.25d;
+                            Coin += 0.25m;
                             break;
                         case 4:
-                            Coin += 1d;
+                            Coin += 1m;
                             break;
                         case 5:
-                            Coin += 2d;
+                            Coin += 2m;
                             break;
                     }
                 }
@@ -88,26 +90,47 @@ namespace CandyMachine
             int input = 0;
             Data dataCandy = new Data();
             Candy[] candies = dataCandy.LoadCandies();
-            
-            // byte[] ArrayCandy = new byte[0];
-            // double Coin = 0;
+            decimal Coin = 0;
+            decimal costReturn;
+            bool IsRunning = true;
 
-            // do
-            // {
-                input = GetSelection(input);
-            // GetCandy(ArrayCandy, input);
-            // GetCoin(Coin);
-            if (candies[GetCandy(input)].Stock == 0)
+            while (IsRunning == true)
             {
-                Print($"{candies[GetCandy(input)].Name} est vite");
+                input = GetSelection(input);
+
+                if (candies[GetCandy(input)].Stock == 0)
+                {
+                    // should add color
+                    Print($"{candies[GetCandy(input)].Name} est vide", input);
+                }
+                else if (candies[GetCandy(input)].Stock > 0)
+                {
+                    // should add color
+                    Console.Clear();
+                    do
+                    {
+                        Print($"{candies[GetCandy(input)].Name}", input,candies[GetCandy(input)].Price,Coin);
+                        Coin += GetCoin(input);
+                        costReturn = Coin - candies[GetCandy(input)].Price;
+                        Console.Clear();
+                        if (Coin > candies[GetCandy(input)].Price)
+                        {
+                            Console.Clear();
+                            Print($"{candies[GetCandy(input)].Name}", input,candies[GetCandy(input)].Price,Coin, costReturn);
+                        }
+                    } while (candies[GetCandy(input)].Price >= Coin);
+
+                    if (candies[GetCandy(input)].Price <= Coin)
+                    {
+                        Print($"Prenez votre friandise", input,candies[GetCandy(input)].Price,Coin, costReturn, $"{candies[GetCandy(input)].Name}");
+                    
+                    }
+                }
+            
+
             }
-                
-            // Console.WriteLine(GetSelection(input));
-
-
-            // }
-
         }
+            
         
     }
 
