@@ -40,11 +40,10 @@ namespace CandyMachine
             return input - 1;
         }
 
-        static decimal GetCoin(int input)
+        static decimal GetCoin(decimal Coin)
         {
-            input = 0;
+            int input = 0;
             bool tryparse = false;
-            decimal Coin = 0;
             Console.WriteLine("[0] = Annuler");
             Console.WriteLine("[1] = 5c");
             Console.WriteLine("[2] = 10c");
@@ -60,22 +59,30 @@ namespace CandyMachine
                     switch (input)
                     {
                         case 0:
-                            Console.Write("Voulez-vous quittez ? [O/N]");
-                            char Quit = Console.ReadLine()[0];
-                            if (Quit == 'n' || Quit == 'N')
+                            if (Coin >= 0m)
                             {
-                                GetCoin(input);
-                            }
-                            else if (Quit == 'o' || Quit == 'O')
-                            {
+                                Console.Clear();
+                                Print($"Voici votre remboursement", 0,0,0, Coin, "A la prochaine fois !");
+                                Console.Write("Voulez-vous quittez ? [O/N]");
+                                char Quit = Console.ReadLine()[0];
+                                if (Quit == 'n' || Quit == 'N')
+                                {
+                                    Console.Clear();
+                                    Main();
+                                }
+                                else if (Quit == 'o' || Quit == 'O')
+                                {
                                 
-                                Environment.Exit(0);
+                                    Environment.Exit(0);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Veuillez entrez un charactere valide.");
+                                    Thread.Sleep(1000);
+                                    Main();
+                                }
                             }
-                            else
-                            {
-                                Console.WriteLine("Veuillez entrez un charactere valide.");
-                                Thread.Sleep(1000);
-                            }
+                            
                             break;
                         case 1:
                             Coin += 0.05m;
@@ -99,6 +106,7 @@ namespace CandyMachine
             return Coin;
         }
         
+        
 
         static void Main()
         {
@@ -111,43 +119,44 @@ namespace CandyMachine
 
             while (IsRunning == true)
             {
+                Console.Clear();
                 input = GetSelection(input);
 
                 if (candies[GetCandy(input)].Stock == 0)
                 {
                     // should add color
+                    Console.Clear();
                     Print($"{candies[GetCandy(input)].Name} est vide", input);
+                    Console.WriteLine($"{candies[GetCandy(input)].Name} est vide, veuillez faire un autre choix.");
+                    Thread.Sleep(2000);
+                    Console.Clear();
+                    // Main();
                 }
                 else if (candies[GetCandy(input)].Stock > 0)
                 {
                     // should add color
-                    Console.Clear();
                     do
                     {
+                        Console.Clear();
                         Print($"{candies[GetCandy(input)].Name}", input,candies[GetCandy(input)].Price,Coin);
-                        Coin += GetCoin(input);
+                        Coin = GetCoin(Coin);
                         costReturn = Coin - candies[GetCandy(input)].Price;
                         Console.Clear();
-                        if (Coin > candies[GetCandy(input)].Price)
-                        {
-                            Console.Clear();
-                            Print($"{candies[GetCandy(input)].Name}", input,candies[GetCandy(input)].Price,Coin, costReturn);
-                            Thread.Sleep(1500);
+                        if (Coin >= candies[GetCandy(input)].Price)
+                        {   
+                                Console.Clear();
+                                candies[GetCandy(input)].Stock--;
+                                Print($"Prenez votre friandise", input,candies[GetCandy(input)].Price,Coin, costReturn, candies[GetCandy(input)].Name);
+                                Coin = 0;
+                                Thread.Sleep(1500);
+                                Console.Clear();
+                                // Main();
                         }
+
                     } while (candies[GetCandy(input)].Price >= Coin);
-
-                    if (candies[GetCandy(input)].Price <= Coin)
-                    {
-                        Print($"Prenez votre friandise", input,candies[GetCandy(input)].Price,Coin, costReturn, $"{candies[GetCandy(input)].Name}");
-                        candies[GetCandy(input)].Stock --;
-                        Main();
-                    }
                 }
-            
-
             }
         }
-
     }
 
 }
