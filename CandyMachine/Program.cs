@@ -60,7 +60,22 @@ namespace CandyMachine
                     switch (input)
                     {
                         case 0:
-                            Environment.Exit(0);
+                            Console.Write("Voulez-vous quittez ? [O/N]");
+                            char Quit = Console.ReadLine()[0];
+                            if (Quit == 'n' || Quit == 'N')
+                            {
+                                GetCoin(input);
+                            }
+                            else if (Quit == 'o' || Quit == 'O')
+                            {
+                                
+                                Environment.Exit(0);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Veuillez entrez un charactere valide.");
+                                Thread.Sleep(1000);
+                            }
                             break;
                         case 1:
                             Coin += 0.05m;
@@ -117,21 +132,22 @@ namespace CandyMachine
                         {
                             Console.Clear();
                             Print($"{candies[GetCandy(input)].Name}", input,candies[GetCandy(input)].Price,Coin, costReturn);
+                            Thread.Sleep(1500);
                         }
                     } while (candies[GetCandy(input)].Price >= Coin);
 
                     if (candies[GetCandy(input)].Price <= Coin)
                     {
                         Print($"Prenez votre friandise", input,candies[GetCandy(input)].Price,Coin, costReturn, $"{candies[GetCandy(input)].Name}");
-                    
+                        candies[GetCandy(input)].Stock --;
+                        Main();
                     }
                 }
             
 
             }
         }
-            
-        
+
     }
 
 }
