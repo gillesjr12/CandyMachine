@@ -105,8 +105,6 @@ namespace CandyMachine
             
             return Coin;
         }
-        
-        
 
         static void Main()
         {
@@ -115,11 +113,14 @@ namespace CandyMachine
             Candy[] candies = dataCandy.LoadCandies();
             decimal Coin = 0;
             decimal costReturn;
+            decimal tmp = 0;
             bool IsRunning = true;
+            
 
             while (IsRunning == true)
             {
                 Console.Clear();
+                Print();
                 input = GetSelection(input);
 
                 if (candies[GetCandy(input)].Stock == 0)
@@ -147,13 +148,14 @@ namespace CandyMachine
                                 Console.Clear();
                                 candies[GetCandy(input)].Stock--;
                                 Print($"Prenez votre friandise", input,candies[GetCandy(input)].Price,Coin, costReturn, candies[GetCandy(input)].Name);
-                                Coin = 0;
                                 Thread.Sleep(1500);
                                 Console.Clear();
                                 // Main();
                         }
 
                     } while (candies[GetCandy(input)].Price >= Coin);
+
+                    Coin = 0;
                 }
             }
         }
