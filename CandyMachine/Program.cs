@@ -1,13 +1,6 @@
-﻿using System.Drawing;
-using Project;
+﻿using Project;
 using static Project.Board;
-using static Project.Candy;
-using static Project.Data;
-using System.Globalization;
-using System.Reflection.Emit;
-using System.Threading;
-using System.Transactions;
-using Microsoft.VisualBasic.CompilerServices;
+
 
 
 namespace CandyMachine
@@ -16,7 +9,13 @@ namespace CandyMachine
     class Program
     {
 
-        private static int userNumInput(int input)
+        public static class candyData
+        {
+            public static Data dataManager = new Data();
+            public static Candy[] candies = dataManager.LoadCandies();
+        }
+        
+        private static int userNumInput(int input) //Force user to put an integral
         {
             bool tryParse = false;
             do
@@ -27,7 +26,7 @@ namespace CandyMachine
         }
         
         
-        private static int GetSelection(int input) // function for the selection's user
+        private static int GetSelection(int input) // Take the user's selection
         {
 
             do
@@ -47,14 +46,15 @@ namespace CandyMachine
         }
 
 
-        public static int GetCandy(int input)
+        public static int GetCandy(int input) //Take the correct position in the array
         {
             return input - 1;
         }
         
 
-        static decimal GetCoin(decimal Coin)
+        static decimal GetCoin(decimal Coin) //User put money in the Candy Machine
         {
+            char Quit = 'N';
             int input = 0;
             Console.WriteLine("[0] = Annuler");
             Console.WriteLine("[1] = 5c");
@@ -64,7 +64,8 @@ namespace CandyMachine
             Console.WriteLine("[5] = 2$");
             Console.Write("--> ");
         
-                input = userNumInput(input);
+                input = userNumInput(input); //User take the number between 0 to 5
+                
                 if (input <= 5 || input >= 0)
                 {
                     switch (input)
@@ -72,26 +73,37 @@ namespace CandyMachine
                         case 0:
                             if (Coin >= 0m)
                             {
-                                Console.Clear();
-                                Print($"Voici votre remboursement", 0,0,0, Coin, "A la prochaine fois !");
-                                Console.Write("Voulez-vous quittez ? [O/N]");
-                                char Quit = Console.ReadLine()[0];
-                                if (Quit == 'n' || Quit == 'N')
+                                Console.Clear();                                                                                                    // Clear the machine
+                                if (Coin  > 0);
                                 {
-                                    Console.Clear();
-                                    Main();
+                                    Print($"Voici votre remboursement", 0,0,0, Coin, "A la prochaine fois !");  // to show the new print with refund and cancelation
                                 }
-                                else if (Quit == 'o' || Quit == 'O')
+                                if (Coin == 0);
                                 {
-                                
-                                    Environment.Exit(0);
+                                    Print($"Vous voulez partir ?", 0,0,0, Coin, "Restez encore un peu :(");  // to show the new print with begging to stay
                                 }
-                                else
+
+                                do
                                 {
-                                    Console.WriteLine("Veuillez entrez un charactere valide.");
-                                    Thread.Sleep(1000);
-                                    Main();
-                                }
+                                    Console.Write("Voulez-vous quittez ? [O/N]"); // User make the choice
+                                    Quit = Console.ReadLine()[0]; // if he wanna stay
+                                    if (Quit == 'n' || Quit == 'N')
+                                    {
+                                        Console.Clear();
+                                        Main(); // If he stay, we take them back to the menu
+                                    }
+                                    else if (Quit == 'o' || Quit == 'O')
+                                    {
+
+                                        Environment.Exit(0); // If he leave, we close the console
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Veuillez entrez un charactere valide."); 
+                                        Thread.Sleep(1000);
+                                    }
+                                } while (Quit != 'n' || Quit != 'N' || Quit != 'o' || Quit != 'O');  // We loop if the user's enter a bad character
+
                             }
                             
                             break;
@@ -115,6 +127,13 @@ namespace CandyMachine
                 return Coin;
         }
 
+        static decimal cashReturn(decimal Coin, int input) //Calculate the return if the user wants to leave
+        {
+            decimal Money;
+            Money = Coin - candyData.candies[GetCandy(input)].Price;
+            return Money;
+        }
+
         static void Music()
         {
             Console.Write("R");Console.Beep(1188,500);Console.Write("é");Console.Beep(1408,250);Console.Write("g");Console.Beep(1760,500);Console.Write("a");Console.Beep(1584,250);Console.Write("l");
@@ -123,67 +142,64 @@ namespace CandyMachine
             Console.Beep(1056,250);Console.Write("i");Console.Beep(1188,500);Console.Write("e");Console.Beep(1320,500);Console.Write("n");Console.Beep(1056,500);Console.Write(" !");
             Console.Beep(880,500);Console.Write("!");Console.Beep(880,500);
             Thread.Sleep(500);
-        }
+        } // Beautiful little song if the user buy a candy
 
          static void videColor()
          {
              Console.ForegroundColor = ConsoleColor.Red;
-         }
+         } // Red method if there's no more candy in the Machine
          static void normalColor()
          {
              Console.ForegroundColor = ConsoleColor.White;
-         }
+         } // Return to white color after the user choose a candy out of stock
         
         static void Main()
         {
             int input = 0;
-            Data dataCandy = new Data();
-            Candy[] candies = dataCandy.LoadCandies();
             decimal Coin = 0;
-            decimal costReturn;
-            decimal tmp = 0;
+            decimal Money = 0;
             bool IsRunning = true;
             
 
-            while (IsRunning == true)
+            while (IsRunning == true) // Putting a true boolean to make the machine repeat
             {
 
                 Console.Clear();
                 Print();
-                input = GetSelection(input);
+                input = GetSelection(input);  // User choose a number in the candy list
 
-                if (candies[GetCandy(input)].Stock == 0)
-                {
-                    Console.Clear();
-                    videColor();
-                    Print($"{candies[GetCandy(input)].Name} est vide", input);
-                    Console.WriteLine($"{candies[GetCandy(input)].Name} est vide, veuillez faire un autre choix.");
+                if (candyData.candies[GetCandy(input)].Stock == 0) // If there's no stock
+                {                                                  // We change the front color in red
+                    Console.Clear();                                // And say that this item is out of stock
+                    videColor();                                     // And offer to take another one | we switch in white color as front end     
+                    Print($"{candyData.candies[GetCandy(input)].Name} est vide", input);
+                    Console.WriteLine($"{candyData.candies[GetCandy(input)].Name} est vide, veuillez faire un autre choix.");
                     Thread.Sleep(3000);
                     normalColor();
                 }
-                else if (candies[GetCandy(input)].Stock > 0)
+                else if (candyData.candies[GetCandy(input)].Stock > 0) // If there's candy in stock
                 {
                     do
                     {
                         Console.Clear();
-                        Print($"{candies[GetCandy(input)].Name}", input,candies[GetCandy(input)].Price,Coin);
-                        Coin = GetCoin(Coin);
-                        costReturn = Coin - candies[GetCandy(input)].Price;
-                        if (Coin >= candies[GetCandy(input)].Price )
+                        Print($"{candyData.candies[GetCandy(input)].Name}", input,candyData.candies[GetCandy(input)].Price,Coin); // We print the Board with the candy information
+                        Coin = GetCoin(Coin);  //The user can insert is money
+                        if (Coin >= candyData.candies[GetCandy(input)].Price ) // If he put enough or too much money for the candy
                         {   
                                 Console.Clear();
-                                candies[GetCandy(input)].Stock--;
-                                Print($"Prenez votre friandise", input,candies[GetCandy(input)].Price,Coin, costReturn, candies[GetCandy(input)].Name);
-                                Console.WriteLine($"Vous avez acheté un {candies[GetCandy(input)].Name} à {candies[GetCandy(input)].Price}$ !");
-                                Music();
-                                // Console.WriteLine("Régalez-vous bien !");
+                                candyData.candies[GetCandy(input)].Stock--; // We give him a candy 
+                                Print($"Prenez votre friandise", input,candyData.candies[GetCandy(input)].Price,Coin, cashReturn(Coin,input), candyData.candies[GetCandy(input)].Name); 
+                                Console.WriteLine($"Vous avez acheté un {candyData.candies[GetCandy(input)].Name} à {candyData.candies[GetCandy(input)].Price}$ !");
+                                Console.WriteLine($"Il vous revient {cashReturn(Coin, input)}$");
+                                Console.WriteLine();
+                                Music(); // Do a beautiful music to have a client's satisfaction
                                 Thread.Sleep(2000);
                         }
 
-                    } while (candies[GetCandy(input)].Price > Coin);
+                    } while (candyData.candies[GetCandy(input)].Price > Coin); // As far the client don't put enough money, we loop.
                     Coin = 0;
                 }
             }
-        }
+        } 
     }
 }
