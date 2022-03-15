@@ -114,8 +114,26 @@ namespace CandyMachine
                 }
                 return Coin;
         }
-        
 
+        static void Music()
+        {
+            Console.Write("R");Console.Beep(1188,500);Console.Write("é");Console.Beep(1408,250);Console.Write("g");Console.Beep(1760,500);Console.Write("a");Console.Beep(1584,250);Console.Write("l");
+            Console.Beep(1408,250);Console.Write("e");Console.Beep(1320,750);Console.Write("z");Console.Beep(1056,250);Console.Write("-");Console.Beep(1320,500);Console.Write("v");
+            Console.Beep(1188,250);Console.Write("o");Console.Beep(1056,250);Console.Write("u");Console.Beep(990,500);Console.Write("s");Console.Beep(990,250);Console.Write(" b");
+            Console.Beep(1056,250);Console.Write("i");Console.Beep(1188,500);Console.Write("e");Console.Beep(1320,500);Console.Write("n");Console.Beep(1056,500);Console.Write(" !");
+            Console.Beep(880,500);Console.Write("!");Console.Beep(880,500);
+            Thread.Sleep(500);
+        }
+
+         static void videColor()
+         {
+             Console.ForegroundColor = ConsoleColor.Red;
+         }
+         static void normalColor()
+         {
+             Console.ForegroundColor = ConsoleColor.White;
+         }
+        
         static void Main()
         {
             int input = 0;
@@ -129,6 +147,7 @@ namespace CandyMachine
 
             while (IsRunning == true)
             {
+
                 Console.Clear();
                 Print();
                 input = GetSelection(input);
@@ -136,9 +155,11 @@ namespace CandyMachine
                 if (candies[GetCandy(input)].Stock == 0)
                 {
                     Console.Clear();
+                    videColor();
                     Print($"{candies[GetCandy(input)].Name} est vide", input);
                     Console.WriteLine($"{candies[GetCandy(input)].Name} est vide, veuillez faire un autre choix.");
-                    Thread.Sleep(2000);
+                    Thread.Sleep(3000);
+                    normalColor();
                 }
                 else if (candies[GetCandy(input)].Stock > 0)
                 {
@@ -153,13 +174,10 @@ namespace CandyMachine
                                 Console.Clear();
                                 candies[GetCandy(input)].Stock--;
                                 Print($"Prenez votre friandise", input,candies[GetCandy(input)].Price,Coin, costReturn, candies[GetCandy(input)].Name);
-                                Console.Beep(200, 100);
-                                Console.Beep(200, 100);
-                                Console.Beep(800, 100);
-                                Console.Beep(200, 100);
-                                Console.Beep(200, 100);
-                                Thread.Sleep(1500);
-                                // Main();
+                                Console.WriteLine($"Vous avez acheté un {candies[GetCandy(input)].Name} à {candies[GetCandy(input)].Price}$ !");
+                                Music();
+                                // Console.WriteLine("Régalez-vous bien !");
+                                Thread.Sleep(2000);
                         }
 
                     } while (candies[GetCandy(input)].Price > Coin);
