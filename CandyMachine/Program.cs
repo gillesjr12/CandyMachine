@@ -18,32 +18,27 @@ namespace CandyMachine
         private static int userNumInput() //Force user to put an integral
         {
             int input;
-            bool tryParse = false;
+            bool tryParse = true;
             do
             {
                 tryParse = int.TryParse(Console.ReadLine(), out input);
-                Console.Write("Veuillez entrez un nombre valide : ");
+                Console.Write("Veuillez entrez la bonne selection : ");
             } while (tryParse != true);
             
             return input;
         }
         
         
-        private static int GetSelection(int input) // Take the user's selection
+        private static int GetSelection() // Take the user's selection
         {
+            int input;
 
             do
             {
                 Print();
                 Console.Write("Veuillez faire votre selection [1-25] : ");
                 input = userNumInput();
-                if (input < 0 || input > 25)
-                {
-                    Console.WriteLine("Veuillez entrez un nombre valide.");
-                    Thread.Sleep(1000);
-                }
-
-            } while (input < 0 || input > 25);
+            } while (input <= 0 || input > 25);
 
             return input;
         }
@@ -93,7 +88,7 @@ namespace CandyMachine
                                     if (Quit == 'n' || Quit == 'N')
                                     {
                                         Console.Clear();
-                                        Main(); // If he stay, we take them back to the menu
+                                        Main(); // If he stay, we take him back to the menu
                                     }
                                     else if (Quit == 'o' || Quit == 'O')
                                     {
@@ -169,7 +164,7 @@ namespace CandyMachine
 
                 Console.Clear();
                 Print();
-                input = GetSelection(input);  // User choose a number in the candy list
+                input = GetSelection();  // User choose a number in the candy list
 
                 if (candyData.candies[GetCandy(input)].Stock == 0) // If there's no stock
                 {                                                  // We change the front color in red
