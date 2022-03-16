@@ -15,13 +15,16 @@ namespace CandyMachine
             public static Candy[] candies = dataManager.LoadCandies();
         }
         
-        private static int userNumInput(int input) //Force user to put an integral
+        private static int userNumInput() //Force user to put an integral
         {
+            int input;
             bool tryParse = false;
             do
             {
                 tryParse = int.TryParse(Console.ReadLine(), out input);
+                Console.Write("Veuillez entrez un nombre valide : ");
             } while (tryParse != true);
+            
             return input;
         }
         
@@ -33,7 +36,7 @@ namespace CandyMachine
             {
                 Print();
                 Console.Write("Veuillez faire votre selection [1-25] : ");
-                input = userNumInput(input);
+                input = userNumInput();
                 if (input < 0 || input > 25)
                 {
                     Console.WriteLine("Veuillez entrez un nombre valide.");
@@ -64,8 +67,8 @@ namespace CandyMachine
             Console.WriteLine("[5] = 2$");
             Console.Write("--> ");
         
-                input = userNumInput(input); //User take the number between 0 to 5
-                
+                input = userNumInput(); //User take the number between 0 to 5
+
                 if (input <= 5 || input >= 0)
                 {
                     switch (input)
@@ -144,11 +147,11 @@ namespace CandyMachine
             Thread.Sleep(500);
         } // Beautiful little song if the user buy a candy
 
-         static void videColor()
+        static void videColor()
          {
              Console.ForegroundColor = ConsoleColor.Red;
          } // Red method if there's no more candy in the Machine
-         static void normalColor()
+        static void normalColor()
          {
              Console.ForegroundColor = ConsoleColor.White;
          } // Return to white color after the user choose a candy out of stock
